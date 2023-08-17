@@ -44,7 +44,7 @@ const controller = {
             if (oneCity) {
                 return res.status(200).json({
                     success: true,
-                    event: oneCity
+                    city: oneCity
                 })
             }
 
