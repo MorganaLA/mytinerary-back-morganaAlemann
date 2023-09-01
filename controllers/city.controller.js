@@ -14,7 +14,7 @@ const controller = {
         }
 
         try {
-            const cities = await City.find(queries);
+            const cities = await City.find(queries).populate('itineraries');
 
             if (cities.length > 0) {
                 return res.status(200).json({
@@ -86,7 +86,8 @@ const controller = {
             name: req.body.name,
             country: req.body.country,
             image: req.body.image,
-            description: req.body.description
+            description: req.body.description,
+            itineraries: req.body. itineraries
         };
     
         try {
