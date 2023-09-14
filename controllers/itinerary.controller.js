@@ -15,7 +15,8 @@ const controller = {
                 itineraries = await Itinerary.find(queries)
                 .populate('city');
             } else {
-                itineraries = await Itinerary.find(queries);
+                itineraries = await Itinerary.find(queries)
+                .populate('user');
             }
             
             if (itineraries.length > 0) {

@@ -7,8 +7,9 @@ const itinerarySchema = new Schema({
         required: true
     },
     user: {
-        name: { type: String, required: true },
-        photo: { type: String, required: true },
+        type: Schema.Types.ObjectId,
+        ref: 'users',
+        required: true
     },
     title: { type: String, required: true },
     price: { type: Number, required: true },
