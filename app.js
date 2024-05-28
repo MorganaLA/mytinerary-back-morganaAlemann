@@ -21,6 +21,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(morgan('dev'));
 
 app.use('/api', indexRouter);
+app.head('/', (req, res) => {
+  res.status(200).send('OK');
+});
 
 app.listen(PORT, () => console.log('Server running on port: ' + PORT));
 
