@@ -8,11 +8,17 @@ import indexRouter from './router/index.router.js'
 
 const app = express();
 const PORT = process.env.PORT || 8000;
+const corsOptions = {
+  origin: 'mytinerary-mla.netlify.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+};
 
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(morgan('dev'));
-app.use(cors());
+
 
 
 app.use('/api', indexRouter);
