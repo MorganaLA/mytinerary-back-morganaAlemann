@@ -10,7 +10,7 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 
 const corsOptions = {
-  origin: 'https://mytinerary-mla.netlify.app', 
+  origin: 'https://main--mytinerary-mla.netlify.app', 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 };
