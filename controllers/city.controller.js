@@ -3,35 +3,35 @@ import City from "../models/City.js";
 const controller = {
     getCities: async (req, res) => {
         let queries = {};
-
+    
         if (req.query.name) {
             queries.name = new RegExp(`^${req.query.name}`, 'i');
         }
-
+    
         if (req.query.country) {
             queries.country = new RegExp(`^${req.query.country}`, 'i');
         }
-
+    
         console.log('Query parameters:', queries);
-
+    
         try {
             const cities = await City.find(queries).populate('itineraries');
             console.log('Cities found:', cities);
-
+    
             if (cities.length > 0) {
                 return res.status(200).json({
                     success: true,
                     cities: cities
                 });
             }
-
+    
             return res.status(404).json({
                 success: false,
                 message: 'Cities not found'
             });
-
+    
         } catch (error) {
-            console.error(error);
+            console.error('Error fetching cities:', error);
             return res.status(500).json({
                 success: false,
                 message: 'Error in obtaining the cities'
