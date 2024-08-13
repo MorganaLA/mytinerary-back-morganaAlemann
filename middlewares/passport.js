@@ -11,16 +11,15 @@ export default passport.use(
         async (jwt_payload, done) => {
             try {
                 const user = await User.findOne({_id: jwt_payload._id}, '-password');
-
-                if(user) {
-                    return done(null, user)
+                if (user) {
+                    return done(null, user);
                 } else {
-                    return done(null, false)
+                    return done(null, false);
                 }
             } catch (error) {
-                console.log(error)
-                return done(error, false)
+                console.log(error);
+                return done(error, false);
             }
         }
     )
-)
+);

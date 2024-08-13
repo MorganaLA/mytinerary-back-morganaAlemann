@@ -8,7 +8,7 @@ export const validator = (schema) => [
             return res.status(400).json({
                 success: false,
                 message: validation.error.details.map(error => error.message)
-            }); 
+            });
         }
         return next();
     }
