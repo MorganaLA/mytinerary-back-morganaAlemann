@@ -5,17 +5,17 @@ const controller = {
 
         let queries = {}
 
-        if (req.query.name) {
+        if (req?.query.name) {
             queries.name = new RegExp(`^${req.query.name}`, 'i')
         }
 
-        if (req.query.country) {
+        if (req?.query.country) {
             queries.country = new RegExp(`^${req.query.country}`, 'i')
         }
 
         try {
             const cities = await City.find(queries).populate('itineraries');
-
+            
             if (cities.length > 0) {
                 return res.status(200).json({
                     success: true,

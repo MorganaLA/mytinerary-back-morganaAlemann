@@ -19,3 +19,6 @@ app.use('/api', indexRouter);
 
 
 app.listen(PORT, () => console.log('Server running on port: ' + PORT));
+
+import controller from './controllers/city.controller.js';
+controller.getCities()
