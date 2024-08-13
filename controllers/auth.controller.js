@@ -1,12 +1,13 @@
-import crypto from 'crypto'
-import bcryptjs from 'bcryptjs'
-import jwt from 'jsonwebtoken'
+import crypto from 'crypto';
+import bcryptjs from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import { verify } from '../helpers/google-verify.js';
 
 const controller = {
     signup: async (req, res, next) => {
         try {
+            // Validar y sanitizar datos aquí si es necesario
             req.body.verified_code = crypto.randomBytes(10).toString('hex');
             req.body.password = bcryptjs.hashSync(req.body.password, 10);
 
@@ -17,7 +18,7 @@ const controller = {
                 message: 'User registered!',
             });
         } catch (error) {
-            console.log(error)
+            console.error(error);
             res.status(500).json({
                 success: false,
                 message: 'Error registering the user',
@@ -26,13 +27,19 @@ const controller = {
     },
     signin: async (req, res, next) => {
         try {
-            
-            let user = await User.findOneAndUpdate(
-                { email: req.user.email },
+            const user = await User.findOneAndUpdate(
+                { email: req.body.email }, // Utiliza `req.body.email` si el email se envía en el cuerpo de la solicitud
                 { online: true },
                 { new: true }
             );
-            
+
+            if (!user || !bcryptjs.compareSync(req.body.password, user.password)) {
+                return res.status(401).json({
+                    success: false,
+                    message: 'Invalid credentials',
+                });
+            }
+
             const token = jwt.sign(
                 {
                     _id: user._id,
@@ -43,10 +50,10 @@ const controller = {
                 },
                 process.env.SECRET_TOKEN,
                 { expiresIn: '10h' }
-                );
-                
-                user.password = null;
-                
+            );
+
+            user.password = null; // No enviar la contraseña en la respuesta
+
             return res.status(200).json({
                 success: true,
                 message: 'User logged in successfully',
@@ -61,6 +68,7 @@ const controller = {
                 },
             });
         } catch (error) {
+            console.error(error);
             res.status(500).json({
                 success: false,
                 message: 'Error authenticating the user',
@@ -69,19 +77,15 @@ const controller = {
     },
     googleSignin: async (req, res, next) => {
         const { token_id } = req.body;
-            
         try {
-     
             const { first_name, last_name, email, photo } = await verify(token_id);
-    
-            let user = await User.findOne({ email: email }); 
-            
-            
-        
+
+            let user = await User.findOne({ email });
+
             if (!user) {
                 const data = {
-                    first_name: first_name,
-                    last_name: last_name,
+                    first_name,
+                    last_name,
                     email,
                     photo,
                     password: bcryptjs.hashSync(process.env.STANDARD_PASS, 10),
@@ -90,10 +94,8 @@ const controller = {
                 };
 
                 user = await User.create(data);
-
             }
 
-            
             user.online = true;
             await user.save();
 
@@ -101,7 +103,6 @@ const controller = {
                 {
                     _id: user._id,
                     email: user.email,
-                    password: user.password,
                     first_name: user.first_name,
                     last_name: user.last_name,
                     photo: user.photo,
@@ -110,7 +111,7 @@ const controller = {
                 { expiresIn: '10h' }
             );
 
-            res.status(200).json({
+            return res.status(200).json({
                 success: true,
                 message: 'User logged in successfully with Google',
                 response: {
@@ -124,7 +125,7 @@ const controller = {
                 },
             });
         } catch (error) {
-          
+            console.error(error);
             res.status(500).json({
                 success: false,
                 message: 'Error authenticating the user',
@@ -144,9 +145,10 @@ const controller = {
                 message: 'User logged out',
             });
         } catch (error) {
+            console.error(error);
             res.status(500).json({
                 success: false,
-                message: 'Error authenticating the user',
+                message: 'Error logging out the user',
             });
         }
     },

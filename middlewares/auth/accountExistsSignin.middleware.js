@@ -4,19 +4,16 @@ export const accountExistsSignin = async (req, res, next) => {
     try {
         const user = await User.findOne({ email: req.body.email });
         if (user) {
-
             req.user = {
                 id: user._id,
                 email: user.email,
                 photo: user.photo,
                 online: user.online,
                 verified: user.verified,
-                password:user.password
+                password: user.password
             };
-
             return next();
         }
-
         return res.status(400).json({
             success: false,
             message: 'User not registered'
