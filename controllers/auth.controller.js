@@ -5,9 +5,8 @@ import User from '../models/User.js';
 import { verify } from '../helpers/google-verify.js';
 
 const controller = {
-    signup: async (req, res, next) => {
+    signup: async (req, res) => {
         try {
-            // Validar y sanitizar datos aquí si es necesario
             req.body.verified_code = crypto.randomBytes(10).toString('hex');
             req.body.password = bcryptjs.hashSync(req.body.password, 10);
 
@@ -19,26 +18,20 @@ const controller = {
             });
         } catch (error) {
             console.error(error);
-            res.status(500).json({
+            return res.status(500).json({
                 success: false,
                 message: 'Error registering the user',
             });
         }
     },
-    signin: async (req, res, next) => {
+
+    signin: async (req, res) => {
         try {
-            const user = await User.findOneAndUpdate(
-                { email: req.body.email }, // Utiliza `req.body.email` si el email se envía en el cuerpo de la solicitud
+            let user = await User.findOneAndUpdate(
+                { email: req.user.email },
                 { online: true },
                 { new: true }
             );
-
-            if (!user || !bcryptjs.compareSync(req.body.password, user.password)) {
-                return res.status(401).json({
-                    success: false,
-                    message: 'Invalid credentials',
-                });
-            }
 
             const token = jwt.sign(
                 {
@@ -52,7 +45,7 @@ const controller = {
                 { expiresIn: '10h' }
             );
 
-            user.password = null; // No enviar la contraseña en la respuesta
+            user.password = null;
 
             return res.status(200).json({
                 success: true,
@@ -69,18 +62,20 @@ const controller = {
             });
         } catch (error) {
             console.error(error);
-            res.status(500).json({
+            return res.status(500).json({
                 success: false,
                 message: 'Error authenticating the user',
             });
         }
     },
-    googleSignin: async (req, res, next) => {
+
+    googleSignin: async (req, res) => {
         const { token_id } = req.body;
+
         try {
             const { first_name, last_name, email, photo } = await verify(token_id);
 
-            let user = await User.findOne({ email });
+            let user = await User.findOne({ email: email });
 
             if (!user) {
                 const data = {
@@ -126,15 +121,16 @@ const controller = {
             });
         } catch (error) {
             console.error(error);
-            res.status(500).json({
+            return res.status(500).json({
                 success: false,
-                message: 'Error authenticating the user',
+                message: 'Error authenticating the user with Google',
             });
         }
     },
-    signout: async (req, res, next) => {
+
+    signout: async (req, res) => {
         try {
-            const user = await User.findOneAndUpdate(
+            await User.findOneAndUpdate(
                 { email: req.user.email },
                 { online: false },
                 { new: true }
@@ -146,13 +142,14 @@ const controller = {
             });
         } catch (error) {
             console.error(error);
-            res.status(500).json({
+            return res.status(500).json({
                 success: false,
                 message: 'Error logging out the user',
             });
         }
     },
-    token: async (req, res, next) => {
+
+    token: async (req, res) => {
         const { user } = req;
         try {
             return res.status(200).json({
@@ -164,7 +161,11 @@ const controller = {
                 },
             });
         } catch (error) {
-            next(error);
+            console.error(error);
+            return res.status(500).json({
+                success: false,
+                message: 'Error retrieving user token information',
+            });
         }
     },
 };

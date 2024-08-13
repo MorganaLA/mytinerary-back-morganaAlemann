@@ -1,4 +1,4 @@
-import 'dotenv/config.js';
+import 'dotenv/config';
 import './config/database.js';
 import express from 'express';
 import morgan from 'morgan';
@@ -26,4 +26,3 @@ app.head('/', (req, res) => {
 });
 
 app.listen(PORT, () => console.log('Server running on port: ' + PORT));
-

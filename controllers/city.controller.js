@@ -1,4 +1,4 @@
-import City from "../models/City.js"
+import City from "../models/City.js";
 
 const controller = {
     getCities: async (req, res) => {
@@ -12,8 +12,11 @@ const controller = {
             queries.country = new RegExp(`^${req.query.country}`, 'i');
         }
 
+        console.log('Query parameters:', queries);
+
         try {
             const cities = await City.find(queries).populate('itineraries');
+            console.log('Cities found:', cities);
 
             if (cities.length > 0) {
                 return res.status(200).json({
