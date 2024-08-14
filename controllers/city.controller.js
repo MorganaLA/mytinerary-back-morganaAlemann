@@ -56,7 +56,7 @@ const controller = {
             });
 
         } catch (error) {
-            console.error(error);
+            console.error('Error fetching city by ID:', error);
             return res.status(500).json({
                 success: false,
                 message: 'Error in obtaining the city'
@@ -70,11 +70,12 @@ const controller = {
 
             return res.status(201).json({
                 success: true,
-                message: 'City created'
+                message: 'City created',
+                city: newCity // Agregado: devolviendo la ciudad creada
             });
 
         } catch (error) {
-            console.error(error);
+            console.error('Error creating the city:', error);
             return res.status(500).json({
                 success: false,
                 message: 'Error creating the city'
@@ -102,7 +103,7 @@ const controller = {
             });
 
         } catch (error) {
-            console.error(error);
+            console.error('Error updating the city:', error);
             return res.status(500).json({
                 success: false,
                 message: 'Error updating the city'
@@ -128,7 +129,7 @@ const controller = {
             });
 
         } catch (error) {
-            console.error(error);
+            console.error('Error deleting the city:', error);
             return res.status(500).json({
                 success: false,
                 message: 'Error deleting the city'

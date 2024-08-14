@@ -27,3 +27,6 @@ app.head('/', (req, res) => {
 
 app.listen(PORT, () => console.log('Server running on port: ' + PORT));
 
+import 'dotenv/config';
+console.log('Mongo URI:', process.env.MONGO);
+
